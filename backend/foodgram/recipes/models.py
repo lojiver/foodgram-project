@@ -94,6 +94,14 @@ class Recipe(models.Model):
         verbose_name='Время приготовления'
     )
 
+    @property
+    def is_admin(self):
+        return (
+            self.role == self.ADMIN
+            or self.is_superuser
+            or self.is_staff
+        )
+
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
@@ -107,12 +115,14 @@ class RecipeTag(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
+        related_name='recipe_for_tag',
         verbose_name='Рецепт'
     )
 
     tag = models.ForeignKey(
         Tag,
         on_delete=models.CASCADE,
+        related_name='tag_in_recipe',
         verbose_name='Теги'
     )
 
@@ -133,12 +143,14 @@ class RecipeTag(models.Model):
 class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
         Recipe,
+        related_name='recipe_for_ingredient',
         on_delete=models.CASCADE,
         verbose_name='Рецепт'
     )
 
     ingredient = models.ForeignKey(
         Ingredient,
+        related_name='ingredient_in_recipe',
         on_delete=models.PROTECT,
         verbose_name='Ингредиент'
     )
