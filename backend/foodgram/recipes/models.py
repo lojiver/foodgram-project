@@ -1,6 +1,8 @@
 from django.db import models
-from .validators import validate_hex
+
 from users.models import User
+
+from .validators import validate_hex
 
 
 class Tag(models.Model):
@@ -93,14 +95,6 @@ class Recipe(models.Model):
     cooking_time = models.PositiveSmallIntegerField(
         verbose_name='Время приготовления'
     )
-
-    @property
-    def is_admin(self):
-        return (
-            self.role == self.ADMIN
-            or self.is_superuser
-            or self.is_staff
-        )
 
     class Meta:
         verbose_name = 'Рецепт'

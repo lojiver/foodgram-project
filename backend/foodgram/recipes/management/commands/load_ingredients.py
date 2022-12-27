@@ -1,9 +1,9 @@
 from csv import DictReader
+
 from django.core.management import BaseCommand
 
 # Import the model
 from recipes.models import Ingredient
-
 
 ALREDY_LOADED_ERROR_MESSAGE = """
 If you need to reload data from the CSV file,

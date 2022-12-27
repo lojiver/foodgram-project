@@ -4,7 +4,7 @@ from recipes.models import Recipe
 from users.models import User
 
 
-class Subscriptions(models.Model):
+class Subscription(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

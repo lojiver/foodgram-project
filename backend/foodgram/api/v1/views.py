@@ -1,36 +1,41 @@
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Sum
-from rest_framework.response import Response
+from rest_framework import filters, mixins, permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework import viewsets, filters, mixins, permissions, status
-from .serializers import (
-    TagSerializer, IngredientSerializer, FavoriteSerializer,
-    RecipeShortSerializer, SubscriptionSerializer, SubscriptionPostSerializer,
-    ShoppingListSerializer, RecipeSerializer
-)
-from recipes.models import Tag, Ingredient, Recipe, RecipeIngredient
-from lists.models import Favorite, Subscriptions, ShoppingList
+from rest_framework.response import Response
+
+from lists.models import Favorite, ShoppingList, Subscription
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from users.models import User
+
 from .filters import RecipeFilter
+from .serializers import (FavoriteSerializer, IngredientSerializer,
+                          RecipeGetSerializer, RecipePostSerializer,
+                          ShoppingListSerializer, SubscriptionPostSerializer,
+                          SubscriptionSerializer, TagSerializer)
+from .services import ListsPostAndGetViewSet
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+
+    def get_serializer_class(self):
+        if self.action in ('retrieve', 'list'):
+            return RecipeGetSerializer
+        return RecipePostSerializer
 
     @action(methods=('get',), detail=False)
     def download_shopping_cart(self, request):
         user = request.user
         if not user.user_in_shopping_list.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
-        q = RecipeIngredient.objects.filter(
-            recipe__recipe_in_shopping_list__user=request.user)
 
-        ingredients = q.values(
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__recipe_in_shopping_list__user=request.user).values(
             'ingredient__name', 'ingredient__measurement_unit'
         ).order_by(
             'ingredient__name'
@@ -66,33 +71,12 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ('^name', )
 
 
-class FavoriteViewSet(
-    mixins.CreateModelMixin, mixins.DestroyModelMixin,
-    viewsets.GenericViewSet
-):
+class FavoriteViewSet(ListsPostAndGetViewSet):
     queryset = Favorite.objects.all()
     serializer_class = FavoriteSerializer
-    permission_classes = (permissions.IsAuthenticated, )
-
-    def perform_create(self, serializer):
-        recipe_id = self.kwargs['id']
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        serializer.save(user=self.request.user, recipe=recipe)
-
-    def create(self, request, *agrs, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        recipe_obj = Recipe.objects.get(id=self.kwargs['id'])
-        instance_serializer = RecipeShortSerializer(recipe_obj)
-        return Response(
-            instance_serializer.data,
-            status=status.HTTP_201_CREATED,
-        )
 
     def get_object(self):
-        recipe_obj = Recipe.objects.get(id=self.kwargs['id'])
-        return get_object_or_404(Favorite, recipe=recipe_obj.id)
+        return super().get_object(Favorite)
 
 
 class SubscriptionGetViewSet(
@@ -102,16 +86,15 @@ class SubscriptionGetViewSet(
     permission_classes = (permissions.IsAuthenticated, )
 
     def get_queryset(self):
-        q = User.objects.filter(is_followed__follower=self.request.user).all()
-        print(q.query)
-        return q
+        return User.objects.filter(
+            is_followed__follower=self.request.user)
 
 
 class SubscriptionPostViewSet(
     mixins.CreateModelMixin, mixins.DestroyModelMixin,
     viewsets.GenericViewSet
 ):
-    queryset = Subscriptions.objects.all()
+    queryset = Subscription.objects.all()
     serializer_class = SubscriptionPostSerializer
     permission_classes = (permissions.IsAuthenticated, )
 
@@ -120,6 +103,9 @@ class SubscriptionPostViewSet(
         user = get_object_or_404(User, id=user_id)
         serializer.save(follower=self.request.user, author=user)
 
+    '''Понятно, что другой сериализатор на вывод я могу отдать через
+    def to_representation, но как мне без переопределения метода фильтр
+    по recipes_limit сделать? Параметр же надо отдать в контексте'''
     def create(self, request, *agrs, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -137,34 +123,13 @@ class SubscriptionPostViewSet(
         )
 
     def get_object(self):
-        user_obj = User.objects.get(id=self.kwargs['id'])
-        return get_object_or_404(Subscriptions, author=user_obj.id)
+        user_obj = get_object_or_404(User, id=self.kwargs['id'])
+        return get_object_or_404(Subscription, author=user_obj.id)
 
 
-class ShoppingListViewSet(
-    mixins.CreateModelMixin, mixins.DestroyModelMixin,
-    viewsets.GenericViewSet
-):
+class ShoppingListViewSet(ListsPostAndGetViewSet):
     queryset = ShoppingList.objects.all()
     serializer_class = ShoppingListSerializer
-    permission_classes = (permissions.IsAuthenticated, )
-
-    def perform_create(self, serializer):
-        recipe_id = self.kwargs['id']
-        recipe = get_object_or_404(Recipe, id=recipe_id)
-        serializer.save(user=self.request.user, recipe=recipe)
-
-    def create(self, request, *agrs, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        recipe_obj = Recipe.objects.get(id=self.kwargs['id'])
-        instance_serializer = RecipeShortSerializer(recipe_obj)
-        return Response(
-            instance_serializer.data,
-            status=status.HTTP_201_CREATED,
-        )
 
     def get_object(self):
-        recipe_obj = Recipe.objects.get(id=self.kwargs['id'])
-        return get_object_or_404(ShoppingList, recipe=recipe_obj.id)
+        return super().get_object(ShoppingList)
