@@ -9,6 +9,7 @@ from lists.models import Favorite, ShoppingList, Subscription
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from users.models import User
 
+'''то же самое, эту строку поставила автоматика isort .'''
 from .filters import RecipeFilter
 from .serializers import (FavoriteSerializer, IngredientSerializer,
                           RecipeGetSerializer, RecipePostSerializer,
@@ -101,26 +102,18 @@ class SubscriptionPostViewSet(
     def perform_create(self, serializer):
         user_id = self.kwargs['id']
         user = get_object_or_404(User, id=user_id)
-        serializer.save(follower=self.request.user, author=user)
+        serializer.save(
+            follower=self.request.user, author=user)
 
-    '''Понятно, что другой сериализатор на вывод я могу отдать через
-    def to_representation, но как мне без переопределения метода фильтр
-    по recipes_limit сделать? Параметр же надо отдать в контексте'''
-    def create(self, request, *agrs, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        user_obj = User.objects.get(id=self.kwargs['id'])
-        recipes_limit = self.request.query_params.get('recipes_limit')
-        instance_serializer = SubscriptionSerializer(
-            user_obj, context={
-                'request': request,
-                'recipes_limit': recipes_limit}
-        )
-        return Response(
-            instance_serializer.data,
-            status=status.HTTP_201_CREATED,
-        )
+    '''у меня по умолчанию request не попадает в контекст, надо
+    либо так передавать, либо create переопределять, может быть,
+    можно как-то засунуть через perform_create, но, опять же, у меня
+    не получилось'''
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({'request': self.request})
+        print(context)
+        return context
 
     def get_object(self):
         user_obj = get_object_or_404(User, id=self.kwargs['id'])

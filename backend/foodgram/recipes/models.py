@@ -1,5 +1,9 @@
 from django.db import models
 
+'''я убираю строчку, делаю isort . - и автоисправление
+добавляет строчку обратно, это автоматика считает, что строчка здесь
+должна быть, я могу её убрать, но, скорее всего, PEP8 в workflow
+не пройду просто'''
 from users.models import User
 
 from .validators import validate_hex

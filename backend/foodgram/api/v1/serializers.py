@@ -26,22 +26,15 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 class CreateRecipeIngredientSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
-        source='ingredient',
-        queryset=Ingredient.objects.all()
-    )
+        queryset=Ingredient.objects.all(),
+        source='ingredient')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit')
 
     class Meta:
         model = RecipeIngredient
-        fields = (
-            'id',
-            'amount',
-        )
-
-    def create(self, validated_data):
-        return RecipeIngredient.objects.create(
-            ingredient=validated_data.get('id'),
-            amount=validated_data.get('amount')
-        )
+        fields = ('id', 'name', 'measurement_unit', 'amount')
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
@@ -115,6 +108,22 @@ class RecipePostSerializer(serializers.ModelSerializer):
         })
         return serializer.data
 
+    def validate(self, data):
+        ingredients = data['ingredients']
+        print(ingredients)
+        ingredients_list = []
+        for ingredient in ingredients:
+            if ingredient['ingredient'] in ingredients_list:
+                raise serializers.ValidationError(
+                    'Есть задублированные ингредиенты!'
+                )
+            ingredients_list.append(ingredient)
+        if data['cooking_time'] <= 0:
+            raise serializers.ValidationError(
+                'Время приготовления должно быть больше 0!'
+            )
+        return data
+
     def create_ingredients(self, recipe, ingredients):
         RecipeIngredient.objects.bulk_create([
             RecipeIngredient(
@@ -123,22 +132,6 @@ class RecipePostSerializer(serializers.ModelSerializer):
                 ingredient=ingredient['ingredient'],
             ) for ingredient in ingredients
         ])
-
-    def validate(self, data):
-        ingredients = self.initial_data.get('ingredients')
-        ingredients_list = []
-        for ingredient in ingredients:
-            ingredient_id = ingredient['id']
-            if ingredient_id in ingredients_list:
-                raise serializers.ValidationError(
-                    'Есть задублированные ингредиенты!'
-                )
-            ingredients_list.append(ingredient_id)
-        if data['cooking_time'] <= 0:
-            raise serializers.ValidationError(
-                'Время приготовления должно быть больше 0!'
-            )
-        return data
 
     def create(self, validated_data):
         tags = validated_data.pop('tags')
@@ -210,6 +203,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         )
 
     def get_is_subscribed(self, obj):
+        print(self.context)
         return Subscription.objects.filter(
             author=obj.id, follower=self.context['request'].user
         ).exists()
@@ -218,7 +212,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         return obj.recipes.count()
 
     def get_recipes(self, obj):
-        recipes_limit = self.context['recipes_limit']
+        request = self.context.get('request')
+        recipes_limit = request.query_params.get('recipes_limit')
         recipes = obj.recipes.all()[:recipes_limit]
         serializer = RecipeShortSerializer(recipes, many=True, read_only=True)
         serializer.is_valid(raise_exception=True)
@@ -245,6 +240,11 @@ class SubscriptionPostSerializer(serializers.ModelSerializer):
             )
         ]
 
+    def to_representation(self, instance):
+        serializer = SubscriptionSerializer(
+            instance.author, context=self.context)
+        return serializer.data
+
 
 class ShoppingListSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(
@@ -267,5 +267,6 @@ class ShoppingListSerializer(serializers.ModelSerializer):
         ]
 
     def to_representation(self, instance):
-        serializer = RecipeShortSerializer(instance.recipe)
+        serializer = RecipeShortSerializer(
+            instance.recipe)
         return serializer.data
