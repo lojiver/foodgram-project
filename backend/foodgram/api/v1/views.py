@@ -8,8 +8,6 @@ from rest_framework.response import Response
 from lists.models import Favorite, ShoppingList, Subscription
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from users.models import User
-
-'''то же самое, эту строку поставила автоматика isort .'''
 from .filters import RecipeFilter
 from .serializers import (FavoriteSerializer, IngredientSerializer,
                           RecipeGetSerializer, RecipePostSerializer,

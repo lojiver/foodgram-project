@@ -4,7 +4,6 @@ from rest_framework.validators import UniqueTogetherValidator
 from lists.models import Favorite, ShoppingList, Subscription
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from users.models import User
-
 from .fields import Base64ImageField
 from .services import get_object_filtered_by_user
 
@@ -110,7 +109,6 @@ class RecipePostSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = data['ingredients']
-        print(ingredients)
         ingredients_list = []
         for ingredient in ingredients:
             if ingredient['ingredient'] in ingredients_list:
@@ -203,7 +201,6 @@ class SubscriptionSerializer(serializers.ModelSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        print(self.context)
         return Subscription.objects.filter(
             author=obj.id, follower=self.context['request'].user
         ).exists()
@@ -214,7 +211,8 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     def get_recipes(self, obj):
         request = self.context.get('request')
         recipes_limit = request.query_params.get('recipes_limit')
-        recipes = obj.recipes.all()[:recipes_limit]
+        print(recipes_limit)
+        recipes = Recipe.objects.filter(author__follower=obj)[:recipes_limit]
         serializer = RecipeShortSerializer(recipes, many=True, read_only=True)
         serializer.is_valid(raise_exception=True)
         return serializer.data
