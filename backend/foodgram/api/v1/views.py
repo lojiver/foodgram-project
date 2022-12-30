@@ -103,14 +103,9 @@ class SubscriptionPostViewSet(
         serializer.save(
             follower=self.request.user, author=user)
 
-    '''у меня по умолчанию request не попадает в контекст, надо
-    либо так передавать, либо create переопределять, может быть,
-    можно как-то засунуть через perform_create, но, опять же, у меня
-    не получилось'''
     def get_serializer_context(self):
         context = super().get_serializer_context()
         context.update({'request': self.request})
-        print(context)
         return context
 
     def get_object(self):

@@ -211,7 +211,6 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     def get_recipes(self, obj):
         request = self.context.get('request')
         recipes_limit = request.query_params.get('recipes_limit')
-        print(recipes_limit)
         recipes = Recipe.objects.filter(author__follower=obj)[:recipes_limit]
         serializer = RecipeShortSerializer(recipes, many=True, read_only=True)
         serializer.is_valid(raise_exception=True)
