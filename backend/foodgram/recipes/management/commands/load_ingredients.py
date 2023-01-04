@@ -1,7 +1,6 @@
 from csv import DictReader
 
 from django.core.management import BaseCommand
-
 # Import the model
 from recipes.models import Ingredient
 

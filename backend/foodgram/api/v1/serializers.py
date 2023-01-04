@@ -1,9 +1,9 @@
-from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
-
 from lists.models import Favorite, ShoppingList, Subscription
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
+from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from users.models import User
+
 from .fields import Base64ImageField
 from .services import get_object_filtered_by_user
 
