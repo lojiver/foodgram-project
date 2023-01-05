@@ -11,7 +11,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '127.0.0.1', 'host.docker.internal'
+    '127.0.0.1',
+    'host.docker.internal',
+    '158.160.35.78'
 ]
 
 INSTALLED_APPS = [
