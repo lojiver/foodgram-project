@@ -74,13 +74,13 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-            # Выполняет pull образа с DockerHub
-            sudo docker pull lojiver/foodgram:latest
-            sudo docker pull lojiver/foodgram_frontend:latest
             #остановка всех контейнеров
             cd infra/
             sudo docker-compose stop
             sudo docker-compose rm backend
+            # Выполняет pull образа с DockerHub
+            sudo docker pull lojiver/foodgram:latest
+            sudo docker pull lojiver/foodgram_frontend:latest
             sudo touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
