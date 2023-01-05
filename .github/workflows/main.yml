@@ -50,10 +50,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Push to Docker Hub
         # Пуш образа в Docker Hub
-        run:
-          cd backend/foodgram
         uses: docker/build-push-action@v2 
         with:
+          context: ../backend/foodgram
           push: true
           tags: lojiver/foodgram:latest
 
