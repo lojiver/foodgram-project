@@ -8,7 +8,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from users.models import User
 
-from .filters import NameSearchFilter, RecipeFilter
+from .filters import IngredientFilter, RecipeFilter
 from .serializers import (FavoriteSerializer, IngredientSerializer,
                           RecipeGetSerializer, RecipePostSerializer,
                           ShoppingListSerializer, SubscriptionPostSerializer,
@@ -65,9 +65,10 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    filter_backends = (NameSearchFilter)
+    filter_backends = (IngredientFilter)
     pagination_class = None
-    search_fields = ('^name', )
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter
 
 
 class FavoriteViewSet(ListsPostAndGetViewSet):
