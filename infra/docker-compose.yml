@@ -16,8 +16,8 @@ services:
       python manage.py collectstatic --noinput &&
       gunicorn --bind 0:8000 foodgram.wsgi"
     volumes:
-      - static_value:/foodgram/static/
-      - media_value:/foodgram/media/
+      - static_value:/app/static/
+      - media_value:/app/media/
     depends_on:
       - db
     env_file:
