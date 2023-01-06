@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
         # Code to load the data into database
         for row in DictReader(open(
-            '../../data/ingredients.csv', encoding="utf-8"
+            'data/ingredients.csv', encoding="utf-8"
         )):
             if Ingredient.objects.filter(name=row['название']).exists():
                 print('data already loaded')
