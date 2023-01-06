@@ -13,7 +13,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'host.docker.internal',
-    '158.160.35.78',
+    '158.160.40.57',
 ]
 
 INSTALLED_APPS = [
