@@ -54,13 +54,13 @@ jobs:
         with:
           context: backend/foodgram/
           push: true
-          tags: lojiver/foodgram:latest
+          tags: lojiver/foodgram:0801
       - name: Push frontend
         uses: docker/build-push-action@v2
         with:
           context: frontend/
           push: true
-          tags: lojiver/foodgram_frontend:latest
+          tags: lojiver/foodgram_frontend:0801
   
   deploy:
     runs-on: ubuntu-latest
@@ -79,8 +79,8 @@ jobs:
             sudo docker-compose stop
             sudo docker-compose rm backend
             # Выполняет pull образа с DockerHub
-            sudo docker pull lojiver/foodgram:latest
-            sudo docker pull lojiver/foodgram_frontend:latest
+            sudo docker pull lojiver/foodgram:0801
+            sudo docker pull lojiver/foodgram_frontend:0801
             sudo touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
