@@ -21,6 +21,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
+    search_fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart')
 
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):
@@ -68,6 +69,7 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
+    search_fields = ('name',)
 
 
 class FavoriteViewSet(ListsPostAndGetViewSet):
