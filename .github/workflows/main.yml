@@ -72,8 +72,8 @@ jobs:
             cd infra/
             sudo docker-compose stop
             sudo docker-compose rm backend
-            sudo docker image rm -f lojiver/foodgram_frontend:latest
-            sudo docker image rm -f lojiver/foodgram:latest
+            sudo docker image rm lojiver/foodgram_frontend:latest
+            sudo docker image rm lojiver/foodgram:latest
             sudo touch .env
             echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
             echo DB_NAME=${{ secrets.DB_NAME }} >> .env
