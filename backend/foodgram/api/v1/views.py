@@ -21,7 +21,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    search_fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart')
 
     def get_serializer_class(self):
         if self.action in ('retrieve', 'list'):
@@ -42,16 +41,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ).annotate(ingredient_total=Sum('amount'))
 
         data = []
-        data.append('Список ваших покупок')
-        data.append('Ингредиент (ед.) - кол-во')
+        data.append('Список ваших покупок\r\n')
+        data.append('Ингредиент (ед.) - кол-во\r\n')
         for ing in ingredients:
             ing_name = ing.get('ingredient__name')
             ing_unit = ing.get('ingredient__measurement_unit')
             amount_sum = ing.get('ingredient_total')
-            data.append(f'* {ing_name} ({ing_unit}) - {amount_sum}')
+            data.append(f'* {ing_name} ({ing_unit}) - {amount_sum}\r\n')
 
         return Response(
-            '\r\n'.join(data),
+            ''.join(data),
             status=status.HTTP_200_OK,
             content_type='text/plain'
         )
@@ -69,7 +68,6 @@ class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = None
     filter_backends = (DjangoFilterBackend,)
     filterset_class = IngredientFilter
-    search_fields = ('name',)
 
 
 class FavoriteViewSet(ListsPostAndGetViewSet):
