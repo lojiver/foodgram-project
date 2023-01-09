@@ -98,7 +98,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'tags', 'author',
             'ingredients', 'name', 'image',
-            'text', 'cooking_time',
+            'text', 'cooking_time'
         )
 
     def to_representation(self, instance):
