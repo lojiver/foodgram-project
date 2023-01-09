@@ -71,7 +71,10 @@ jobs:
             #остановка всех контейнеров
             cd infra/
             sudo docker-compose stop
-            sudo docker-compose rm backend            
+            sudo docker-compose rm backend
+            sudo docker-compose rm infra_nginx_1
+            sudo docker-compose rm infra_frontend_1
+            sudo docker-compose rm infra_db_1            
             sudo docker image rm lojiver/foodgram_frontend:latest
             sudo docker image rm lojiver/foodgram:latest
             sudo touch .env
