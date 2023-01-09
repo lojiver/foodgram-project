@@ -5,7 +5,7 @@ from users.models import User
 
 class RecipeFilter(filters.FilterSet):
     author = filters.ModelChoiceFilter(queryset=User.objects.all())
-    tags = filters.AllValuesMultipleFilter(field_name='tag__slug')
+    tags = filters.AllValuesMultipleFilter(field_name='tag_in_recipe__slug')
     is_favorited = filters.BooleanFilter(method='get_is_favorited')
     is_in_shopping_cart = filters.BooleanFilter(
         method='get_is_in_shopping_cart')
