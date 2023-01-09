@@ -83,4 +83,5 @@ jobs:
             echo DB_PORT=${{ secrets.DB_PORT }} >> .env
             echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env            
             echo DEBUG=False >> .env
-            sudo docker-compose up -d --build
+            sudo docker-compose up -d
+          script_stop: true
