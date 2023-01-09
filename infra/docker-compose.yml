@@ -11,6 +11,7 @@ services:
   backend:
     image: lojiver/foodgram:latest
     restart: always
+    container_name: backend
     command: >
       bash -c "python manage.py migrate &&
       python manage.py collectstatic --noinput &&
