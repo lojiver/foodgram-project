@@ -3,6 +3,7 @@ from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 from users.models import User
+from users.serializers import CustomUserSerializer
 
 from .fields import Base64ImageField
 from .services import get_object_filtered_by_user
@@ -59,10 +60,7 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 
 class RecipeGetSerializer(serializers.ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
-    author = serializers.PrimaryKeyRelatedField(
-        default=serializers.CurrentUserDefault(),
-        queryset=User.objects.all()
-    )
+    author = CustomUserSerializer(read_only=True)
     ingredients = RecipeIngredientSerializer(
         many=True, read_only=True, source='recipe_for_ingredient')
     is_favorited = serializers.SerializerMethodField()

@@ -22,4 +22,5 @@ class ListsPostAndGetViewSet(
 
     def get_object(self, model):
         recipe_obj = get_object_or_404(Recipe, id=self.kwargs['id'])
-        return get_object_or_404(model, recipe=recipe_obj.id)
+        return get_object_or_404(
+            model, recipe=recipe_obj.id, user=self.request.user)
