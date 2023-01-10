@@ -1,5 +1,5 @@
 from django.db.models import Sum
-from django.shortcuts import get_object_or_404
+from django.shortcuts import HttpResponse, get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from lists.models import Favorite, ShoppingList, Subscription
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
@@ -49,7 +49,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             amount_sum = ing.get('ingredient_total')
             data.append(f'* {ing_name} ({ing_unit}) - {amount_sum}\n')
 
-        return Response(
+        return HttpResponse(
             '\r'.join(data),
             status=status.HTTP_200_OK,
             content_type='text/plain'
