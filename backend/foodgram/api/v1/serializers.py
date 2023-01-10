@@ -1,7 +1,6 @@
 from lists.models import Favorite, ShoppingList, Subscription
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
 from users.models import User
 from users.serializers import CustomUserSerializer
 
@@ -178,12 +177,6 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
         fields = ('id', 'user', 'recipe')
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Favorite.objects.all(),
-                fields=('user', 'recipe'),
-            )
-        ]
 
     def to_representation(self, instance):
         serializer = RecipeShortSerializer(instance.recipe)
@@ -232,12 +225,6 @@ class SubscriptionPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
         fields = ('id', 'author', 'follower')
-        validators = [
-            UniqueTogetherValidator(
-                queryset=Subscription.objects.all(),
-                fields=('author', 'follower'),
-            )
-        ]
 
     def to_representation(self, instance):
         serializer = SubscriptionSerializer(
