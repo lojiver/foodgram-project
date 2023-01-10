@@ -107,6 +107,10 @@ class RecipePostSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         ingredients = data['ingredients']
+        if not isinstance(ingredients, list) or ingredients is None:
+            raise serializers.ValidationError(
+                'Ингредиенты заполнены неправильно'
+            )
         ingredients_list = []
         for ingredient in ingredients:
             if ingredient['ingredient'] in ingredients_list:
@@ -187,7 +191,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    recipes = RecipeShortSerializer(many=True, read_only=True)
+    recipes = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
