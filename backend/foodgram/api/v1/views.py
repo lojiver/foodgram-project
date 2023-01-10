@@ -41,16 +41,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ).annotate(ingredient_total=Sum('amount'))
 
         data = []
-        data.append('Список ваших покупок/r/n')
-        data.append('Ингредиент (ед.) - кол-во\r\n')
+        data.append('Список ваших покупок\n')
+        data.append('Ингредиент (ед.) - кол-во\n')
         for ing in ingredients:
             ing_name = ing.get('ingredient__name')
             ing_unit = ing.get('ingredient__measurement_unit')
             amount_sum = ing.get('ingredient_total')
-            data.append(f'* {ing_name} ({ing_unit}) - {amount_sum}\r\n')
+            data.append(f'* {ing_name} ({ing_unit}) - {amount_sum}\n')
 
         return Response(
-            ''.join(data),
+            '\r'.join(data),
             status=status.HTTP_200_OK,
             content_type='text/plain'
         )
