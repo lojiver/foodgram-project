@@ -110,7 +110,8 @@ class SubscriptionPostViewSet(
 
     def get_object(self):
         user_obj = get_object_or_404(User, id=self.kwargs['id'])
-        return get_object_or_404(Subscription, author=user_obj.id)
+        return get_object_or_404(
+            Subscription, author=user_obj.id, follower=self.request.user)
 
 
 class ShoppingListViewSet(ListsPostAndGetViewSet):
