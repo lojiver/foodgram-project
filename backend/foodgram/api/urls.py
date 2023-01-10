@@ -1,4 +1,5 @@
 from django.urls import include, path, re_path
+from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 
 from .v1.views import (FavoriteViewSet, IngredientViewSet, RecipeViewSet,
@@ -34,4 +35,9 @@ urlpatterns = [
     path('', include(router.urls)),
     path('', include('djoser.urls')),
     path('auth/', include('djoser.urls.authtoken')),
+    path(
+        'docs/',
+        TemplateView.as_view(template_name='./docs/redoc.html'),
+        name='redoc'
+    ),
 ]

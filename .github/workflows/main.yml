@@ -71,6 +71,7 @@ jobs:
             #остановка всех контейнеров
             cd infra/
             sudo docker-compose stop
+            sudo docker-compose rm -f
             sudo docker image rm lojiver/foodgram_frontend:latest
             sudo docker image rm lojiver/foodgram:latest
             sudo touch .env
