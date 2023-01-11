@@ -116,7 +116,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     'Есть задублированные ингредиенты!'
                 )
-            ingredients_list.append(ingredient)
+            ingredients_list.append(ingredient['ingredient'])
         if data['cooking_time'] <= 0:
             raise serializers.ValidationError(
                 'Время приготовления должно быть больше 0!'
@@ -205,10 +205,11 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get('request')
-        recipes_limit = int(request.query_params.get('recipes_limit')) or 5
-        recipes = Recipe.objects.filter(author__follower=obj)[:recipes_limit]
+        if request.query_params.get('recipes_limit') is not None:
+            recipes_limit = int(request.query_params.get('recipes_limit'))
+        recipes_limit = 6
+        recipes = Recipe.objects.filter(author=obj)[:recipes_limit]
         serializer = RecipeShortSerializer(recipes, many=True, read_only=True)
-        serializer.is_valid(raise_exception=True)
         return serializer.data
 
 
