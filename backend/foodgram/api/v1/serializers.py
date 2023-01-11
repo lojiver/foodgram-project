@@ -141,8 +141,10 @@ class RecipePostSerializer(serializers.ModelSerializer):
         return recipe
 
     def update(self, recipe, validated_data):
-        tags = validated_data.get('tags')
-        ingredients = validated_data.get('ingredients')
+        tags = validated_data.pop('tags')
+        ingredients = validated_data.pop('ingredients')
+
+        super().update(recipe, validated_data)
 
         if tags:
             recipe.tags.clear()
@@ -152,8 +154,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
             recipe.ingredients.clear()
             self.create_ingredients(recipe, ingredients)
 
-        RecipeIngredient.objects.filter(recipe=recipe).delete()
-        return super().update(recipe, validated_data)
+        return recipe
 
 
 class RecipeShortSerializer(serializers.ModelSerializer):
