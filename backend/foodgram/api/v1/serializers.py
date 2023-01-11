@@ -184,7 +184,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    recipes = RecipeShortSerializer(many=True, read_only=True)
+    recipes = serializers.SerializerMethodField()
     is_subscribed = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
@@ -205,7 +205,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get('request')
-        recipes_limit = request.query_params.get('recipes_limit')
+        recipes_limit = int(request.query_params.get('recipes_limit')) or 5
         recipes = Recipe.objects.filter(author__follower=obj)[:recipes_limit]
         serializer = RecipeShortSerializer(recipes, many=True, read_only=True)
         serializer.is_valid(raise_exception=True)
