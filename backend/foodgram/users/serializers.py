@@ -1,8 +1,8 @@
 from djoser.serializers import UserSerializer
+from lists.models import Subscription
 from rest_framework import serializers
 
 from .models import User
-from lists.models import Subscription
 
 
 class CustomUserSerializer(UserSerializer):
