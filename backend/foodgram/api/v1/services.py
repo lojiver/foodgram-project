@@ -3,10 +3,11 @@ from recipes.models import Recipe
 from rest_framework import mixins, permissions, viewsets
 
 
-def get_object_filtered_by_user(self, obj, model, ):
+def get_object_filtered_by_user(self, obj, model):
+    if self.context['request'].user.is_anonymous:
+        return False
     return model.objects.filter(
-        user=self.context['request'].user, recipe=obj.id
-    ).exists()
+        user=self.context['request'].user, recipe=obj.id).exists()
 
 
 class ListsPostAndGetViewSet(
