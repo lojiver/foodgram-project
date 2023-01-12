@@ -206,9 +206,9 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     def get_recipes(self, obj):
         request = self.context.get('request')
+        recipes_limit = 6
         if request.query_params.get('recipes_limit') is not None:
             recipes_limit = int(request.query_params.get('recipes_limit'))
-        recipes_limit = 6
         recipes = Recipe.objects.filter(author=obj)[:recipes_limit]
         serializer = RecipeShortSerializer(recipes, many=True, read_only=True)
         return serializer.data
