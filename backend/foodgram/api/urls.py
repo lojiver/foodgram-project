@@ -14,7 +14,7 @@ router.register(r'recipes', RecipeViewSet)
 urlpatterns = [
     re_path(
         r'^recipes/(?P<id>\d+)/favorite/$',
-        FavoriteViewSet.as_view({'post': 'create', 'delete': 'destroy'})
+        FavoriteViewSet.as_view({'post': 'create', 'delete': 'destroy',})
     ),
     re_path(
         r'^recipes/(?P<id>\d+)/shopping_cart/$',
