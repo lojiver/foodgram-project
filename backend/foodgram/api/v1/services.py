@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
-from recipes.models import Recipe
 from rest_framework import mixins, permissions, viewsets
+
+from recipes.models import Recipe
 
 
 def get_object_filtered_by_user(self, obj, model):

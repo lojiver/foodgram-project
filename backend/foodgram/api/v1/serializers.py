@@ -1,9 +1,9 @@
+from rest_framework import serializers
+
 from lists.models import Favorite, ShoppingList, Subscription
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
-from rest_framework import serializers
 from users.models import User
 from users.serializers import CustomUserSerializer
-
 from .fields import Base64ImageField
 from .services import get_object_filtered_by_user
 
